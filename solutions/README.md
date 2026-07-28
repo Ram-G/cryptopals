@@ -15,7 +15,7 @@ solutions/
       ch01.rs
   csharp/
     set01/
-      Challenge01.cs
+      ch01.cs
 ```
 
 Create set directories only when they are needed. Use zero-padded set and
@@ -50,9 +50,9 @@ use the `--language` option.
 
 Earlier repository content is retained at:
 
-- `python/archive/` — Python 2-era Set 1 scripts.
-- `rust/archive/` — the original Set 1 Cargo project.
-- `csharp/archive/` — the original Visual Studio/.NET solution.
+- `solutions/python/archive/` — Python 2-era Set 1 scripts.
+- `solutions/rust/archive/` — the original Set 1 Cargo project.
+- `solutions/csharp/archive/` — the original Visual Studio/.NET solution.
 
 Archived code preserves historical work and may require its original toolchain
 or dependencies. New work belongs in the set directories outside `archive/`.

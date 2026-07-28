@@ -133,6 +133,20 @@ if __name__ == "__main__":
 '''
 
 
+def create_parent_directories(root: Path, destination: Path) -> None:
+    """Create destination parents without traversing symbolic links."""
+    current = root
+    for part in destination.relative_to(root).parts[:-1]:
+        current /= part
+        if current.is_symlink():
+            raise ValueError(f"refusing to use symbolic-link directory {current}")
+        try:
+            current.mkdir()
+        except FileExistsError:
+            if not current.is_dir():
+                raise ValueError(f"parent path is not a directory: {current}")
+
+
 def main() -> int:
     args = parse_arguments()
     root = Path(__file__).resolve().parent.parent
@@ -152,21 +166,24 @@ def main() -> int:
         / f"set{args.set_number:02d}"
         / f"ch{args.challenge_number:02d}.py"
     )
-    if destination.exists():
+    try:
+        create_parent_directories(root, destination)
+        with destination.open("x", encoding="utf-8") as solution_file:
+            solution_file.write(
+                python_template(
+                    args.set_number,
+                    args.challenge_number,
+                    title,
+                    description.relative_to(root).as_posix(),
+                )
+            )
+    except FileExistsError as error:
         raise SystemExit(
             f"error: refusing to overwrite {destination.relative_to(root)}"
-        )
+        ) from error
+    except ValueError as error:
+        raise SystemExit(f"error: {error}") from error
 
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(
-        python_template(
-            args.set_number,
-            args.challenge_number,
-            title,
-            description.relative_to(root).as_posix(),
-        ),
-        encoding="utf-8",
-    )
     print(f"created {destination.relative_to(root)}")
     return 0
 
