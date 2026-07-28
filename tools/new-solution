@@ -1,0 +1,175 @@
+#!/usr/bin/env python3
+"""Create a solution skeleton from the local Cryptopals descriptions."""
+
+from __future__ import annotations
+
+import argparse
+from html.parser import HTMLParser
+from pathlib import Path
+import re
+
+
+class ChallengeHeadingParser(HTMLParser):
+    """Collect text from h3 headings in a Cryptopals challenge page."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self._in_heading = False
+        self._parts: list[str] = []
+        self.headings: list[str] = []
+
+    def handle_starttag(
+        self, tag: str, attrs: list[tuple[str, str | None]]
+    ) -> None:
+        if tag.lower() == "h3":
+            self._in_heading = True
+            self._parts = []
+
+    def handle_data(self, data: str) -> None:
+        if self._in_heading:
+            self._parts.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() == "h3" and self._in_heading:
+            heading = " ".join("".join(self._parts).split())
+            if heading:
+                self.headings.append(heading)
+            self._in_heading = False
+            self._parts = []
+
+
+def parse_arguments() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Create a solution file from the local challenge corpus."
+    )
+    parser.add_argument(
+        "--language",
+        choices=("python",),
+        default="python",
+        help="solution language (default: python)",
+    )
+    parser.add_argument("set_number", type=int, metavar="SET")
+    parser.add_argument("challenge_number", type=int, metavar="CHALLENGE")
+    return parser.parse_args()
+
+
+def find_description(root: Path, set_number: int, challenge_number: int) -> Path:
+    challenge_dir = (
+        root
+        / "descriptions"
+        / "cryptopals.com"
+        / "sets"
+        / str(set_number)
+        / "challenges"
+    )
+    candidates = (
+        challenge_dir / f"{challenge_number}.html",
+        challenge_dir / f"{challenge_number}.txt",
+    )
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    raise ValueError(
+        f"challenge {challenge_number} is not present in set {set_number}"
+    )
+
+
+def title_from_html(description: Path) -> str:
+    parser = ChallengeHeadingParser()
+    parser.feed(description.read_text(encoding="utf-8"))
+    site_heading = "the cryptopals crypto challenges"
+    for heading in parser.headings:
+        if heading.casefold() != site_heading:
+            return heading
+    raise ValueError(f"could not find a challenge title in {description}")
+
+
+def title_from_text(description: Path, challenge_number: int) -> str:
+    title_pattern = re.compile(rf"^{challenge_number}\.\s+(.+?)\s*$")
+    for line in description.read_text(encoding="utf-8").splitlines():
+        match = title_pattern.match(line)
+        if match:
+            return match.group(1)
+    raise ValueError(f"could not find a challenge title in {description}")
+
+
+def challenge_title(description: Path, challenge_number: int) -> str:
+    if description.suffix == ".html":
+        return title_from_html(description)
+    return title_from_text(description, challenge_number)
+
+
+def python_template(
+    set_number: int,
+    challenge_number: int,
+    title: str,
+    description: str,
+) -> str:
+    return f'''"""Set {set_number}, Challenge {challenge_number}: {title}.
+
+Description: {description}
+"""
+
+EXPECTED = None
+
+
+def solve():
+    """Return the challenge answer."""
+    raise NotImplementedError("implement this challenge")
+
+
+def verify():
+    """Return the solution after checking it against the expected answer."""
+    if EXPECTED is None:
+        raise RuntimeError("set EXPECTED before verifying the solution")
+    actual = solve()
+    if actual != EXPECTED:
+        raise AssertionError(f"expected {{EXPECTED!r}}, got {{actual!r}}")
+    return actual
+
+
+if __name__ == "__main__":
+    print(verify())
+'''
+
+
+def main() -> int:
+    args = parse_arguments()
+    root = Path(__file__).resolve().parent.parent
+
+    try:
+        description = find_description(
+            root, args.set_number, args.challenge_number
+        )
+        title = challenge_title(description, args.challenge_number)
+    except ValueError as error:
+        raise SystemExit(f"error: {error}") from error
+
+    destination = (
+        root
+        / "solutions"
+        / args.language
+        / f"set{args.set_number:02d}"
+        / f"ch{args.challenge_number:02d}.py"
+    )
+    if destination.exists():
+        raise SystemExit(
+            f"error: refusing to overwrite {destination.relative_to(root)}"
+        )
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(
+        python_template(
+            args.set_number,
+            args.challenge_number,
+            title,
+            description.relative_to(root).as_posix(),
+        ),
+        encoding="utf-8",
+    )
+    print(f"created {destination.relative_to(root)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
