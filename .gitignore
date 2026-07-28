@@ -1,12 +1,46 @@
-# misc
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+/.agents/
+/.codex/
 
-target/
+# Editors and operating systems
 .vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
 
-# Build results
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+*.egg-info/
 
+# Rust
+target/
+
+# .NET and Visual Studio
+.vs/
+[Bb]in/
+[Oo]bj/
 [Dd]ebug/
 [Rr]elease/
 x64/
-[Bb]in/
-[Oo]bj/
+TestResults/
+*.user
+*.suo

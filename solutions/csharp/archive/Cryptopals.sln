@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "csharp", "csharp", "{42C466DF-196B-4C5F-B515-5D437028F64A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cryptopals", "csharp\Cryptopals\Cryptopals.csproj", "{672B870D-C64E-4EB8-9B68-1A4AA018B95E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cryptopals", "Cryptopals\Cryptopals.csproj", "{672B870D-C64E-4EB8-9B68-1A4AA018B95E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
