@@ -24,9 +24,22 @@ files and helpers should stay within that language directory.
 
 ## Verification
 
-For a small exercise, keep the expected answer and verification logic in the
-same source file as the solution. A directly executed solution should fail
-clearly when its result differs and print the verified result when it succeeds.
+For a small exercise, keep the expected answer in the same source file as the
+solution. The language runner owns shared verification behavior: it loads the
+challenge, invokes `solve()`, and either reports a mismatch or prints the
+verified result. Each Python challenge has a small `__main__` entry point that
+delegates to the same utility, so direct execution behaves identically.
+
+Run a Python solution by set and challenge number:
+
+```sh
+./solutions/python/run-solution 1 1  # from the repository root
+./run-solution 1 1                   # from solutions/python/
+../run-solution 1 1                  # from solutions/python/set01/
+```
+
+You can also run `python3 chNN.py` from its set directory or use VS Code's
+top-right play button. Python 3.10 or newer is required.
 
 Use separate fixture or data files when inputs are large, shared, or numerous.
 Prefer the official files already available under
@@ -39,12 +52,14 @@ reusable components or more complex edge cases.
 The current Python template can be created from the repository root:
 
 ```sh
-./tools/new-solution 1 2
+./solutions/python/init-solution 1 2  # from the repository root
+./init-solution 1 2                   # from solutions/python/
+../init-solution 1 2                  # from solutions/python/set01/
 ```
 
 The command reads the local challenge corpus, creates the appropriate set
-directory, and refuses to replace an existing file. Future language renderers
-use the `--language` option.
+directory, and refuses to replace an existing file. Other languages can add
+equivalent commands within their language directory when needed.
 
 ## Archived implementations
 

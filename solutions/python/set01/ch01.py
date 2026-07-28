@@ -1,34 +1,21 @@
-"""Set 1, Challenge 1: Convert hex to base64."""
+"""Set 1, Challenge 1: Convert hex to base64.
 
-from base64 import b64encode
+Online: https://cryptopals.com/sets/1/challenges/1
+"""
 
-
-INPUT_HEX = (
-    "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f"
-    "69736f6e6f7573206d757368726f6f6d"
-)
-EXPECTED = (
-    "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
-)
+EXPECTED = None
 
 
-def hex_to_base64(hex_text: str) -> str:
-    """Convert a hex-encoded string to a base64-encoded string."""
-    raw = bytes.fromhex(hex_text)
-    return b64encode(raw).decode("ascii")
-
-
-def solve() -> str:
-    return hex_to_base64(INPUT_HEX)
-
-
-def verify() -> str:
-    """Return the solution after checking it against the expected answer."""
-    actual = solve()
-    if actual != EXPECTED:
-        raise AssertionError(f"expected {EXPECTED!r}, got {actual!r}")
-    return actual
+def solve():
+    """Return the challenge answer."""
+    raise NotImplementedError("implement this challenge")
 
 
 if __name__ == "__main__":
-    print(verify())
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from util import run_and_verify
+
+    raise SystemExit(run_and_verify(solve, EXPECTED))

@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run current Python solution",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/solutions/python/run-solution",
+      "args": ["--file", "${file}"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

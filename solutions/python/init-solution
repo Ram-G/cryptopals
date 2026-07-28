@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a solution skeleton from the local Cryptopals descriptions."""
+"""Initialize a Python solution from the local Cryptopals descriptions."""
 
 from __future__ import annotations
 
@@ -40,13 +40,7 @@ class ChallengeHeadingParser(HTMLParser):
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create a solution file from the local challenge corpus."
-    )
-    parser.add_argument(
-        "--language",
-        choices=("python",),
-        default="python",
-        help="solution language (default: python)",
+        description="Initialize a Python solution from the local challenge corpus."
     )
     parser.add_argument("set_number", type=int, metavar="SET")
     parser.add_argument("challenge_number", type=int, metavar="CHALLENGE")
@@ -103,11 +97,10 @@ def python_template(
     set_number: int,
     challenge_number: int,
     title: str,
-    description: str,
 ) -> str:
     return f'''"""Set {set_number}, Challenge {challenge_number}: {title}.
 
-Description: {description}
+Online: https://cryptopals.com/sets/{set_number}/challenges/{challenge_number}
 """
 
 EXPECTED = None
@@ -118,18 +111,14 @@ def solve():
     raise NotImplementedError("implement this challenge")
 
 
-def verify():
-    """Return the solution after checking it against the expected answer."""
-    if EXPECTED is None:
-        raise RuntimeError("set EXPECTED before verifying the solution")
-    actual = solve()
-    if actual != EXPECTED:
-        raise AssertionError(f"expected {{EXPECTED!r}}, got {{actual!r}}")
-    return actual
-
-
 if __name__ == "__main__":
-    print(verify())
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from util import run_and_verify
+
+    raise SystemExit(run_and_verify(solve, EXPECTED))
 '''
 
 
@@ -149,7 +138,7 @@ def create_parent_directories(root: Path, destination: Path) -> None:
 
 def main() -> int:
     args = parse_arguments()
-    root = Path(__file__).resolve().parent.parent
+    root = Path(__file__).resolve().parents[2]
 
     try:
         description = find_description(
@@ -162,7 +151,7 @@ def main() -> int:
     destination = (
         root
         / "solutions"
-        / args.language
+        / "python"
         / f"set{args.set_number:02d}"
         / f"ch{args.challenge_number:02d}.py"
     )
@@ -174,7 +163,6 @@ def main() -> int:
                     args.set_number,
                     args.challenge_number,
                     title,
-                    description.relative_to(root).as_posix(),
                 )
             )
     except FileExistsError as error:
@@ -185,6 +173,11 @@ def main() -> int:
         raise SystemExit(f"error: {error}") from error
 
     print(f"created {destination.relative_to(root)}")
+    print(
+        "challenge: "
+        f"https://cryptopals.com/sets/{args.set_number}/"
+        f"challenges/{args.challenge_number}"
+    )
     return 0
 
 

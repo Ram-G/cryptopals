@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+"""Run a Python challenge solution by set and challenge number."""
+
+from __future__ import annotations
+
+import argparse
+import importlib.util
+from pathlib import Path
+import re
+import sys
+
+from util import run_and_verify
+
+
+def parse_arguments() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("set_number", type=int, nargs="?", metavar="SET")
+    parser.add_argument("challenge_number", type=int, nargs="?", metavar="CHALLENGE")
+    parser.add_argument(
+        "--file",
+        type=Path,
+        metavar="PATH",
+        help="run the challenge represented by a solution file",
+    )
+    args = parser.parse_args()
+
+    has_numbers = args.set_number is not None or args.challenge_number is not None
+    if args.file is not None and has_numbers:
+        parser.error("use either --file or SET CHALLENGE, not both")
+    if args.file is None and (
+        args.set_number is None or args.challenge_number is None
+    ):
+        parser.error("provide --file or both SET and CHALLENGE")
+    return args
+
+
+def solution_path(root: Path, args: argparse.Namespace) -> Path:
+    python_root = root / "solutions" / "python"
+    if args.file is None:
+        solution = (
+            python_root
+            / f"set{args.set_number:02d}"
+            / f"ch{args.challenge_number:02d}.py"
+        )
+    else:
+        solution = args.file.expanduser()
+        if not solution.is_absolute():
+            solution = Path.cwd() / solution
+
+    solution = solution.resolve()
+    try:
+        relative_solution = solution.relative_to(python_root.resolve())
+    except ValueError as error:
+        raise SystemExit(
+            f"error: solution is outside {python_root.relative_to(root)}: {solution}"
+        ) from error
+
+    if not re.fullmatch(r"set\d{2}/ch\d{2}\.py", relative_solution.as_posix()):
+        raise SystemExit(
+            "error: expected a solution path like "
+            "solutions/python/set01/ch01.py"
+        )
+    if not solution.is_file():
+        raise SystemExit(f"error: no Python solution at {relative_solution}")
+    return solution
+
+
+def load_solution(solution: Path):
+    module_name = f"cryptopals_{solution.parent.name}_{solution.stem}"
+    spec = importlib.util.spec_from_file_location(module_name, solution)
+    if spec is None or spec.loader is None:
+        raise SystemExit(f"error: could not load solution: {solution}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    sys.path.insert(0, str(solution.parent))
+    try:
+        spec.loader.exec_module(module)
+    except Exception as error:
+        sys.modules.pop(module_name, None)
+        raise SystemExit(f"error: could not load solution: {error}") from error
+    finally:
+        del sys.path[0]
+    return module
+
+
+def main() -> int:
+    args = parse_arguments()
+    root = Path(__file__).resolve().parents[2]
+    solution = solution_path(root, args)
+    module = load_solution(solution)
+
+    if not hasattr(module, "EXPECTED"):
+        raise SystemExit("error: solution does not define EXPECTED")
+    solve = getattr(module, "solve", None)
+    if not callable(solve):
+        raise SystemExit("error: solution does not define a callable solve()")
+
+    return run_and_verify(solve, module.EXPECTED)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

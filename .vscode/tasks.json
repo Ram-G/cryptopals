@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Initialize Python solution",
+      "type": "process",
+      "command": "${workspaceFolder}/solutions/python/init-solution",
+      "args": ["${input:setNumber}", "${input:challengeNumber}"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "setNumber",
+      "type": "promptString",
+      "description": "Cryptopals set number",
+      "default": "1"
+    },
+    {
+      "id": "challengeNumber",
+      "type": "promptString",
+      "description": "Cryptopals challenge number",
+      "default": "1"
+    }
+  ]
+}
