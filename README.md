@@ -16,6 +16,9 @@ solutions/
     archive/                  Earlier Python 2 implementations
     init-solution             Python solution scaffolder
     run-solution              Python solution runner
+  c/
+    set01/                    Current C solutions
+    init-solution             C solution scaffolder
   rust/
     archive/                  Earlier Rust implementations
   csharp/
@@ -52,7 +55,7 @@ python -m pip install PACKAGE
 
 The `.venv/` directory and generated caches are ignored by Git.
 
-## Start a solution
+## Start a Python solution
 
 From the repository root, scaffold a Python solution from the offline corpus:
 
@@ -69,6 +72,37 @@ file directly or use `run-solution`.
 From `solutions/python/`, use the shorter `./init-solution 1 2`; from a set
 directory, use `../init-solution 1 2`. The scaffolder validates set and
 challenge numbers and refuses to overwrite an existing solution.
+
+## Work on C solutions
+
+GCC or another C17 compiler and GNU Make are required. Initialize a challenge:
+
+```sh
+./solutions/c/init-solution 1 1
+```
+
+Build every existing C challenge from the repository root:
+
+```sh
+make
+```
+
+`make c` is equivalent. Sources matching `solutions/c/set*/ch*.c` are
+discovered automatically, and executables mirror their paths under `.build/c/`.
+Run or debug one directly after building:
+
+```sh
+./.build/c/set01/ch01
+gdb .build/c/set01/ch01
+```
+
+The scaffold represents its final answer as a heap-allocated, printable C
+string. The shared utility verifies and frees that answer. Internal challenge
+code can still work with binary data.
+
+For Vim, open a source normally, such as
+`vim solutions/c/set01/ch01.c`, and run Make from another terminal. No
+repository-specific Vim configuration is required.
 
 ## Read challenges offline
 

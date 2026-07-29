@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Initialize a Python solution from the local Cryptopals descriptions."""
+"""Initialize a C solution from the local Cryptopals descriptions."""
 
 from __future__ import annotations
 
@@ -16,39 +16,39 @@ from scaffold import Challenge, load_challenge, write_new_file  # noqa: E402
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Initialize a Python solution from the local challenge corpus."
+        description="Initialize a C solution from the local challenge corpus."
     )
     parser.add_argument("set_number", type=int, metavar="SET")
     parser.add_argument("challenge_number", type=int, metavar="CHALLENGE")
     return parser.parse_args()
 
 
-def python_template(challenge: Challenge) -> str:
+def c_template(challenge: Challenge) -> str:
     heading = (
         f"Set {challenge.set_number}, Challenge "
         f"{challenge.challenge_number}: {challenge.title}."
     )
-    return f'''"""{heading}
+    return f'''/*
+ * {heading}
+ * Online: {challenge.url}
+ */
 
-Online: {challenge.url}
-"""
+#include "../util.h"
 
-EXPECTED = None
+#include <stdlib.h>
 
-
-def solve():
-    """Return the challenge answer."""
-    raise NotImplementedError("implement this challenge")
+static const char *const EXPECTED = NULL;
 
 
-if __name__ == "__main__":
-    import sys
-    from pathlib import Path
+/* Return a heap-allocated answer; run_and_verify frees it. */
+static char *solve(void) {{
+    return NULL;
+}}
 
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-    from util import run_and_verify
 
-    raise SystemExit(run_and_verify(solve, EXPECTED))
+int main(void) {{
+    return run_and_verify(solve, EXPECTED);
+}}
 '''
 
 
@@ -65,12 +65,12 @@ def main() -> int:
     destination = (
         ROOT
         / "solutions"
-        / "python"
+        / "c"
         / f"set{args.set_number:02d}"
-        / f"ch{args.challenge_number:02d}.py"
+        / f"ch{args.challenge_number:02d}.c"
     )
     try:
-        write_new_file(ROOT, destination, python_template(challenge))
+        write_new_file(ROOT, destination, c_template(challenge))
     except FileExistsError as error:
         raise SystemExit(
             f"error: refusing to overwrite {destination.relative_to(ROOT)}"

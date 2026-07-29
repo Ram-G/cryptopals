@@ -10,6 +10,9 @@ solutions/
       ch01.py
     set02/
       ch09.py
+  c/
+    set01/
+      ch01.c
   rust/
     set01/
       ch01.rs
@@ -61,6 +64,19 @@ The current Python template can be created from the repository root:
 The command reads the local challenge corpus, creates the appropriate set
 directory, and refuses to replace an existing file. Other languages can add
 equivalent commands within their language directory when needed.
+
+For C, initialize a solution with:
+
+```sh
+./solutions/c/init-solution 1 1
+```
+
+From the repository root, `make` or `make c` compiles every existing C
+challenge. Run an individual result directly from its mirrored build path, such
+as `./.build/c/set01/ch01`. C solutions return heap-allocated printable strings
+to the shared verification utility, which frees them after use; binary
+representations can remain internal to `solve()`.
+C code uses same-line opening braces for both functions and control blocks.
 
 ## Archived implementations
 
