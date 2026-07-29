@@ -30,4 +30,5 @@ def run_and_verify(
         print(f"error: {error}", file=sys.stderr)
         return 1
     print(answer)
+    print("✅ verified")
     return 0

@@ -34,11 +34,10 @@ Python 3.10 or newer is required. Run a challenge directly:
 python3 solutions/python/set01/ch01.py
 ```
 
-Challenge 1 is intentionally unfinished, so this command reports that
-`EXPECTED` must be set until you implement the challenge. Each file delegates
-to the shared utility, which checks a completed result against the expected
-answer before printing it. You can also select a challenge by number with
-`./solutions/python/run-solution 1 1`. From
+Each file delegates to the shared utility, which checks the result against the
+expected answer before confirming the match and printing it. An unfinished
+scaffold instead reports that `EXPECTED` must be set. You can also select a
+challenge by number with `./solutions/python/run-solution 1 1`. From
 `solutions/python/`, use `./run-solution 1 1`; from a set directory, use
 `../run-solution 1 1`.
 

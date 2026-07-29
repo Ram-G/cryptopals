@@ -27,8 +27,9 @@ files and helpers should stay within that language directory.
 For a small exercise, keep the expected answer in the same source file as the
 solution. The language runner owns shared verification behavior: it loads the
 challenge, invokes `solve()`, and either reports a mismatch or prints the
-verified result. Each Python challenge has a small `__main__` entry point that
-delegates to the same utility, so direct execution behaves identically.
+match confirmation and verified result. Each Python challenge has a small
+`__main__` entry point that delegates to the same utility, so direct execution
+behaves identically.
 
 Run a Python solution by set and challenge number:
 
